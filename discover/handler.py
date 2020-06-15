@@ -1,12 +1,16 @@
+import os
 import socket
 import threading
+
+from discover.zone_manager import return_zone
 
 SERVER_TIMEOUT = 1
 
 
 class ServerThread(threading.Thread):
     """
-    udp server manage by this thread
+    udp server manage by this thread, this server is used for receive zones file to update client zone
+    Discover Connection has an object of this class which is used to control udp server
     """
     def __init__(self, sock):
         super().__init__()
@@ -15,14 +19,16 @@ class ServerThread(threading.Thread):
         self.sock.settimeout(SERVER_TIMEOUT)
 
     def run(self):
+        zone_path = os.path.dirname(__file__) + '/zone.txt'
         while True:
             try:
                 data, addr = self.sock.recvfrom(1024)
-                print(data, addr)
+                if data:
+                    with open(zone_path, 'wb') as file:
+                        file.write(data)
             except socket.timeout:  # TODO: find better solution to recvfrom block function
                 # server run until is_server_stop is False
                 if self.is_server_stop:
-                    self.sock.close()
                     break
 
     def stop_server(self):
@@ -33,7 +39,6 @@ class DiscoverConnection:
     """
     this class manage udp connection to exchange zones between clients
     """
-
     def __init__(self,
                  connection_ip,
                  connection_port):
@@ -51,12 +56,13 @@ class DiscoverConnection:
         server.start()
         return server
 
-    def send_zone(self, server_ip, server_port):
-        self.sock.sendto(b'hi', (server_ip, server_port))
+    def send_zone(self, receiver_ip, receiver_port):
+        return self.sock.sendto(return_zone(), (receiver_ip, receiver_port))
 
     def close(self):
         """
         stop thread server and close connection
         """
         self.server.stop_server()
-
+        self.server.join()
+        self.sock.close()
