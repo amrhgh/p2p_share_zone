@@ -6,9 +6,9 @@ zone_path = os.path.dirname(__file__) + '/zone.txt'
 
 
 def get_client_record():
-    name = config['General']['name']
-    ip = config['General']['ip']
-    port = config['Discover']['port']
+    name = config.get('General', 'name')
+    ip = config.get('General', 'ip')
+    port = config.get('Discover', 'port')
     return f'{name} {ip} {port}'
 
 

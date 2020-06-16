@@ -2,6 +2,7 @@ import socket
 from unittest import TestCase
 
 from discover.handler import DiscoverConnection
+from discover.zone_manager import return_zone
 
 
 class ConnectionTest(TestCase):
@@ -24,6 +25,6 @@ class ConnectionTest(TestCase):
     def test_send_zone(self):
         self.first_connection = DiscoverConnection(*self.first_connection_conf)
         self.second_connection = DiscoverConnection(*self.second_connection_conf)
-        self.second_connection.send_zone(*self.first_connection_conf)
+        self.second_connection.send_zone(return_zone(), *self.first_connection_conf)
         self.first_connection.close()
         self.second_connection.close()

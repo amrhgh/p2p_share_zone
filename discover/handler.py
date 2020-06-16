@@ -12,6 +12,7 @@ class ServerThread(threading.Thread):
     udp server manage by this thread, this server is used for receive zones file to update client zone
     Discover Connection has an object of this class which is used to control udp server
     """
+
     def __init__(self, sock):
         super().__init__()
         self.sock = sock
@@ -39,6 +40,7 @@ class DiscoverConnection:
     """
     this class manage udp connection to exchange zones between clients
     """
+
     def __init__(self,
                  connection_ip,
                  connection_port):
@@ -56,8 +58,19 @@ class DiscoverConnection:
         server.start()
         return server
 
-    def send_zone(self, receiver_ip, receiver_port):
-        return self.sock.sendto(return_zone(), (receiver_ip, receiver_port))
+    def send_zone(self, zone, receiver_ip, receiver_port):
+        return self.sock.sendto(zone, (receiver_ip, receiver_port))
+
+    def sending_zone_thread(self):
+        """
+        send zone for all clients included in zone file
+        """
+        clients_list = return_zone()  # get list of all clients
+        for client in clients_list[:-2]:  # last record in zone is the current client
+            name, ip, port = client.split()
+            self.send_zone(clients_list, ip, port)
+        threading.Timer(2, self.sending_zone_thread).start()
+
 
     def close(self):
         """
