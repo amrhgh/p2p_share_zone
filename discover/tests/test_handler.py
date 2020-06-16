@@ -19,9 +19,9 @@ class ConnectionTest(TestCase):
         self.assertEqual(second_connection.sock.sendto(b'hi', self.first_connection_conf), 2)
         first_connection.close()
         second_connection.close()
+        open('/home/user/projects/pyTorrent/discover/zone.txt', 'w').close()
 
     def test_send_zone(self):
-        open('/home/user/projects/pyTorrent/discover/zone.txt', 'w').close()
         self.first_connection = DiscoverConnection(*self.first_connection_conf)
         self.second_connection = DiscoverConnection(*self.second_connection_conf)
         self.second_connection.send_zone(*self.first_connection_conf)
