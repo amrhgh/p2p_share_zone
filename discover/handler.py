@@ -2,7 +2,7 @@ import os
 import socket
 import threading
 
-from discover.zone_manager import return_zone
+from discover.zone_manager import return_zone, update_zone
 
 SERVER_TIMEOUT = 1
 
@@ -25,15 +25,27 @@ class ServerThread(threading.Thread):
             try:
                 data, addr = self.sock.recvfrom(1024)
                 if data:
-                    with open(zone_path, 'wb') as file:
-                        file.write(data)
+                    update_zone(data)
             except socket.timeout:  # TODO: find better solution to recvfrom block function
                 # server run until is_server_stop is False
                 if self.is_server_stop:
                     break
 
-    def stop_server(self):
-        self.is_server_stop = True
+
+class SendZoneThread(threading.Thread):
+    def __init__(self, connection):
+        super().__init__()
+        self.connection = connection
+        self.is_thread_stop = False
+
+    def run(self):
+        clients_list = return_zone()  # get list of all clients
+        for client in clients_list[:-2]:  # last record in zone is the current client
+            name, ip, port = client.split()
+            self.connection.send_zone(clients_list, ip, port)
+            print(client)
+        if self.is_thread_stop:
+            threading.Timer(2, self.run).start()
 
 
 class DiscoverConnection:
@@ -43,12 +55,17 @@ class DiscoverConnection:
 
     def __init__(self,
                  connection_ip,
-                 connection_port):
+                 connection_port,
+                 start_receiving_server=True,
+                 start_send_zone_thread=True):
         self.server_address = (connection_ip, connection_port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(self.server_address)
         self.stop_server = False
-        self.server = self.start_server()
+        if start_receiving_server:
+            self.server = self.start_server()
+        if start_send_zone_thread:
+            self.send_zone_thread = self.start_sending_zone_thread()
 
     def start_server(self):
         """
@@ -59,23 +76,27 @@ class DiscoverConnection:
         return server
 
     def send_zone(self, zone, receiver_ip, receiver_port):
+        """
+        send zone for receiver_ip:receiver_port
+        :param zone: zone pass as list so must be converted to byte before sending
+        :return: length of bytes are sent
+        """
+        zone = bytes('\n'.join(zone), encoding='UTF-8')
         return self.sock.sendto(zone, (receiver_ip, receiver_port))
 
-    def sending_zone_thread(self):
+    def start_sending_zone_thread(self):
         """
         send zone for all clients included in zone file
         """
-        clients_list = return_zone()  # get list of all clients
-        for client in clients_list[:-2]:  # last record in zone is the current client
-            name, ip, port = client.split()
-            self.send_zone(clients_list, ip, port)
-        threading.Timer(2, self.sending_zone_thread).start()
-
+        send_thread = SendZoneThread(self)
+        send_thread.start()
+        return send_thread
 
     def close(self):
         """
         stop thread server and close connection
         """
-        self.server.stop_server()
+        self.server.is_server_stop = True
+        self.send_zone_thread.is_thread_stop = True
         self.server.join()
         self.sock.close()

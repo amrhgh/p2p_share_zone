@@ -13,8 +13,15 @@ def get_client_record():
 
 
 def return_zone():
+    """
+    :return: zone file as list witch the current client info is included
+    """
     with open(zone_path, 'r') as file:
         zone_file = file.readlines()
     zone_file.append(get_client_record())
-    return bytes('\n'.join(zone_file), encoding='UTF-8')
+    return zone_file
 
+
+def update_zone(received_zone):
+    with open(zone_path, 'wb') as file:
+        file.write(received_zone)

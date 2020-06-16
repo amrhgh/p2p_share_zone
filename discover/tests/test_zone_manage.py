@@ -10,4 +10,4 @@ class ZoneTest(TestCase):
         ip = config['General']['ip']
         port = config['Discover']['port']
         output = return_zone()
-        self.assertTrue(bytes(f'{name} {ip} {port}', encoding='UTF-8') in output)
+        self.assertTrue(f'{name} {ip} {port}' in output)
