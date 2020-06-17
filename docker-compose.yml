@@ -10,7 +10,7 @@ services:
     volumes:
       - ./docker_container_configs/conf_1.ini:/opt/pyTorrent/pyTorrent_conf/configs.ini
       - ./docker_container_configs/zone_1.txt:/opt/pyTorrent/discover/zone.txt
-    entrypoint: python main.py
+    entrypoint: echo hello
   client3:
     image: pytorrent:latest
     container_name: pytorrent_3

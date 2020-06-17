@@ -1,6 +1,7 @@
 import os
 import socket
 import threading
+from time import sleep
 
 from discover.zone_manager import return_zone, update_zone
 from pyTorrent_conf.conf_reader import config
@@ -40,12 +41,12 @@ class SendZoneThread(threading.Thread):
         self.is_thread_stop = False
 
     def run(self):
-        clients_list = return_zone()  # get list of all clients
-        for client in clients_list[:-1]:  # last record in zone is the current client
-            name, ip, port = client.split()
-            self.connection.send_zone(clients_list, ip, port)
-        if self.is_thread_stop:
-            threading.Timer(2, self.run).start()
+        while not self.is_thread_stop:
+            clients_list = return_zone()  # get list of all clients
+            for client in clients_list[:-1]:  # last record in zone is the current client
+                name, ip, port = client.split()
+                self.connection.send_zone(clients_list, ip, port)
+            sleep(2)
 
 
 class DiscoverConnection:
