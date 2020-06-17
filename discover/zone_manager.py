@@ -23,5 +23,16 @@ def return_zone():
 
 
 def update_zone(received_zone):
-    with open(zone_path, 'wb') as file:
-        file.write(received_zone)
+    """
+    add new records to zone
+    :param received_zone: get current zone records appended current client info
+    """
+    zone_list = return_zone()
+    received_zone = received_zone.decode()
+    new_records = list()
+    for record in received_zone.split('\n'):
+        if record not in zone_list:
+            new_records.append(record)
+    file = open(zone_path, 'a')
+    file.write('\n' + '\n'.join(new_records))
+    file.close()

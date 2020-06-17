@@ -3,6 +3,7 @@ import socket
 import threading
 
 from discover.zone_manager import return_zone, update_zone
+from pyTorrent_conf.conf_reader import config
 
 SERVER_TIMEOUT = 1
 
@@ -82,7 +83,7 @@ class DiscoverConnection:
         :return: length of bytes are sent
         """
         zone = bytes('\n'.join(zone), encoding='UTF-8')
-        return self.sock.sendto(zone, (receiver_ip, receiver_port))
+        return self.sock.sendto(zone, (receiver_ip, int(receiver_port)))
 
     def start_sending_zone_thread(self):
         """
@@ -100,3 +101,9 @@ class DiscoverConnection:
         self.send_zone_thread.is_thread_stop = True
         self.server.join()
         self.sock.close()
+
+
+def start_discover_connection():
+    ip = config.get('General', 'ip')
+    port = config.getint('Discover', 'port')
+    DiscoverConnection(ip, port)
