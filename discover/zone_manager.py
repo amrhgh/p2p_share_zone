@@ -22,6 +22,16 @@ def return_zone():
     return zone_file
 
 
+def append_list_to_file(path, new_lines):
+    file = open(path, 'a+')
+    new_lines = '\n'.join(new_lines)
+    if file.readlines():
+        file.write('\n' + new_lines)
+    else:
+        file.write(new_lines)
+    file.close()
+
+
 def update_zone(received_zone):
     """
     add new records to zone
@@ -33,6 +43,4 @@ def update_zone(received_zone):
     for record in received_zone.split('\n'):
         if record not in zone_list:
             new_records.append(record)
-    file = open(zone_path, 'a')
-    file.write('\n' + '\n'.join(new_records))
-    file.close()
+    append_list_to_file(zone_path, new_records)

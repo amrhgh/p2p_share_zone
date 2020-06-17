@@ -28,7 +28,7 @@ class ConnectionTest(TestCase):
             file.close()
             first_connection.close()
             second_connection.close()
-        self.assertEqual('\nhi', file_data)
+        self.assertEqual('hi', file_data)
 
     def test_send_zone(self):
         file = open(zone_path, 'w')

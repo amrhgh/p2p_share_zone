@@ -22,7 +22,6 @@ class ServerThread(threading.Thread):
         self.sock.settimeout(SERVER_TIMEOUT)
 
     def run(self):
-        zone_path = os.path.dirname(__file__) + '/zone.txt'
         while True:
             try:
                 data, addr = self.sock.recvfrom(1024)
