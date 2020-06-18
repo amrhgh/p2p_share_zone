@@ -37,12 +37,11 @@ def update_zone(received_zone):
     add new records to zone
     :param received_zone: get current zone records appended current client info
     """
-    if received_zone == b'':
-        return
     received_zone = received_zone.decode()
     zone_list = return_zone()
     new_records = list()
     for record in received_zone.split('\n'):
         if record not in zone_list:
             new_records.append(record)
-    append_list_to_file(zone_path, new_records)
+    if new_records:
+        append_list_to_file(zone_path, new_records)
