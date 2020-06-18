@@ -96,8 +96,10 @@ class DiscoverConnection:
         """
         stop thread server and close connection
         """
-        self.server.is_server_stop = True
-        self.send_zone_thread.is_thread_stop = True
+        if hasattr(self, 'server'):
+            self.server.is_server_stop = True
+        if hasattr(self, 'send_zone_thread'):
+            self.send_zone_thread.is_thread_stop = True
         self.server.join()
         self.sock.close()
 

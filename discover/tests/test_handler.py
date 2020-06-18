@@ -53,7 +53,7 @@ class ConnectionTest(TestCase):
         file.close()
         try:
             first_connection = DiscoverConnection(*self.first_connection_conf)
-            second_connection = DiscoverConnection(*self.second_connection_conf)
+            second_connection = DiscoverConnection(*self.second_connection_conf, start_send_zone_thread=False)
             # second_connection.send_zone(return_zone(), *self.first_connection_conf)
             sleep(4)
             file = open(zone_path)
