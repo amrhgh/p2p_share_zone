@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from discover.zone_manager import return_zone, zone_path, update_zone
+from discover.zone_manager import return_zone, zone_path, update_zone, get_nodes_name
 from conf.conf_reader import config
 
 
@@ -46,3 +46,12 @@ class ZoneTest(TestCase):
         lines = file.readlines()
         self.assertEqual(len(lines), 1)
         file.close()
+
+    def test_get_names_from_zone_list(self):
+        zone_list = [
+            'NS3 172.28.1.3 8888',
+            'NS4 172.28.1.4 8888',
+            'NS1 172.28.1.1 8888'
+        ]
+        names = get_nodes_name(zone_list)
+        self.assertEqual(['NS3', 'NS4', 'NS1'], names)

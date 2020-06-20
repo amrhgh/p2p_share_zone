@@ -45,3 +45,11 @@ def update_zone(received_zone):
             new_records.append(record)
     if new_records:
         append_list_to_file(zone_path, new_records)
+
+
+def get_nodes_name(zone_list):
+    names = list()
+    for node in zone_list:
+        name, address = node.split(' ', 1)
+        names.append(name)
+    return names

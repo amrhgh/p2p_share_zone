@@ -100,9 +100,10 @@ class DiscoverConnection:
         """
         if hasattr(self, 'server'):
             self.server.is_server_stop = True
+            self.server.join()
         if hasattr(self, 'send_zone_thread'):
             self.send_zone_thread.is_thread_stop = True
-        self.server.join()
+            self.send_zone_thread.join()
         self.sock.close()
 
 

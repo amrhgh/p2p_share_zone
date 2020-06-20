@@ -18,9 +18,10 @@ class ConnectionTest(TestCase):
     def test_send_and_receive(self):
         open(zone_path, 'w').close()
         try:
-            first_connection = DiscoverConnection(*self.first_connection_conf)
-            second_connection = DiscoverConnection(*self.second_connection_conf)
-            second_connection.send_zone(['hi', ], *self.first_connection_conf)
+            first_connection = DiscoverConnection(*self.first_connection_conf, start_send_zone_thread=False)
+            second_connection = DiscoverConnection(*self.second_connection_conf, start_send_zone_thread=False
+                                                   , start_receiving_server=False)
+            second_connection.send_zone(['NS10 1.0.0.1 8888', ], *self.first_connection_conf)
             sleep(0.5)
             file = open(zone_path)
             file_data = file.read()
@@ -28,7 +29,7 @@ class ConnectionTest(TestCase):
             file.close()
             first_connection.close()
             second_connection.close()
-        self.assertEqual('hi', file_data)
+        self.assertEqual('NS10 1.0.0.1 8888', file_data)
 
     def test_send_zone(self):
         file = open(zone_path, 'w')
