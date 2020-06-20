@@ -73,7 +73,7 @@ def update_zone(received_zone):
     new_records = list()
     for record in received_zone.split('\n'):
         name, ip, port = record.split()
-        if not session().query(Zone).filter_by(name=name).first():
+        if not session().query(Zone).filter_by(name=name).first() and name != config.get('General', 'name'):
             new_records.append(record)
     if new_records:
         append_list_to_database(new_records)

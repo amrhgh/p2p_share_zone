@@ -10,6 +10,7 @@ class Zone(Base):
     name = Column(String, primary_key=True)
     ip = Column(String)
     port = Column(Integer)
+    distance = Column(Integer, default=1)
 
     def __repr__(self):
         return f"{self.name} --- {self.ip} --- {self.port}"
