@@ -8,7 +8,7 @@ services:
       testing_net:
         ipv4_address: 172.28.1.2
     volumes:
-      - ./docker_container_configs/conf_1.ini:/opt/pyTorrent/pyTorrent_conf/configs.ini
+      - ./docker_container_configs/conf_1.ini:/opt/pyTorrent/conf/configs.ini
       - ./docker_container_configs/zone_1.txt:/opt/pyTorrent/discover/zone.txt
     entrypoint: python main.py
   client3:
@@ -18,7 +18,7 @@ services:
       testing_net:
         ipv4_address: 172.28.1.3
     volumes:
-      - ./docker_container_configs/conf_2.ini:/opt/pyTorrent/pyTorrent_conf/configs.ini
+      - ./docker_container_configs/conf_2.ini:/opt/pyTorrent/conf/configs.ini
       - ./docker_container_configs/zone_2.txt:/opt/pyTorrent/discover/zone.txt
     entrypoint: python main.py
   client4:
@@ -28,7 +28,7 @@ services:
       testing_net:
         ipv4_address: 172.28.1.4
     volumes:
-      - ./docker_container_configs/conf_3.ini:/opt/pyTorrent/pyTorrent_conf/configs.ini
+      - ./docker_container_configs/conf_3.ini:/opt/pyTorrent/conf/configs.ini
       - ./docker_container_configs/zone_3.txt:/opt/pyTorrent/discover/zone.txt
     entrypoint: python main.py
 

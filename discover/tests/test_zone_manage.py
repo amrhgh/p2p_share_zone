@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from discover.zone_manager import return_zone, zone_path, update_zone
-from pyTorrent_conf.conf_reader import config
+from conf.conf_reader import config
 
 
 class ZoneTest(TestCase):

@@ -1,10 +1,9 @@
-import os
 import socket
 import threading
 from time import sleep
 
 from discover.zone_manager import return_zone, update_zone
-from pyTorrent_conf.conf_reader import config
+from conf.conf_reader import config
 
 SERVER_TIMEOUT = 1
 
@@ -82,7 +81,10 @@ class DiscoverConnection:
         :return: length of bytes are sent
         """
         zone = bytes('\n'.join(zone), encoding='UTF-8')
-        return self.sock.sendto(zone, (receiver_ip, int(receiver_port)))
+        try:
+            return self.sock.sendto(zone, (receiver_ip, int(receiver_port)))
+        except Exception:   # server might be unreachable or other issues
+            pass
 
     def start_sending_zone_thread(self):
         """

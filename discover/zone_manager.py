@@ -1,6 +1,6 @@
 import os
 
-from pyTorrent_conf.conf_reader import config
+from conf.conf_reader import config
 
 zone_path = os.path.dirname(__file__) + '/zone.txt'
 
