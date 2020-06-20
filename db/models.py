@@ -7,8 +7,7 @@ Base = declarative_base()
 class Zone(Base):
     __tablename__ = 'zone'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String, primary_key=True)
     ip = Column(String)
     port = Column(Integer)
 

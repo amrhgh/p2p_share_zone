@@ -2,7 +2,7 @@ import socket
 import threading
 from time import sleep
 
-from db.zone_manager import return_zone, update_zone
+from db.zone_manager import return_zone_in_string, update_zone
 from conf.conf_reader import config
 
 SERVER_TIMEOUT = 1
@@ -40,7 +40,7 @@ class SendZoneThread(threading.Thread):
 
     def run(self):
         while not self.is_thread_stop:
-            clients_list = return_zone()  # get list of all clients
+            clients_list = return_zone_in_string()  # get list of all clients
             for client in clients_list[:-1]:  # last record in zone is the current client
                 name, ip, port = client.split()
                 self.connection.send_zone(clients_list, ip, port)

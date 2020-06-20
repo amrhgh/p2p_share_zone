@@ -2,7 +2,7 @@ from time import sleep
 from unittest import TestCase
 
 from discover.handler import DiscoverConnection
-from db.zone_manager import return_zone, zone_path
+from db.zone_manager import return_zone_in_string, zone_path
 
 
 class ConnectionTest(TestCase):
@@ -37,7 +37,7 @@ class ConnectionTest(TestCase):
         try:
             first_connection = DiscoverConnection(*self.first_connection_conf)
             second_connection = DiscoverConnection(*self.second_connection_conf)
-            second_connection.send_zone(return_zone(), *self.first_connection_conf)
+            second_connection.send_zone(return_zone_in_string(), *self.first_connection_conf)
             sleep(0.5)
             file = open(zone_path)
             file_data = file.read()
