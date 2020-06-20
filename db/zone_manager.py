@@ -1,4 +1,6 @@
 import os
+import threading
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -12,7 +14,24 @@ db_path = os.path.dirname(__file__) + '/database.sqlite'
 engine = create_engine(f'sqlite:///{db_path}', echo=False)
 session_factory = sessionmaker(bind=engine)
 Session = scoped_session(session_factory)
-session = Session()
+
+
+class DBConnection:
+    """
+    this class create because session is not thread safe and each thread should have its own session
+    """
+    session_dic = dict()
+
+    def __call__(self, *args, **kwargs):
+        thread_id = threading.get_ident()
+        session = self.session_dic.get(thread_id)
+        if not session:
+            session = Session()
+            self.session_dic.update({thread_id: session})
+        return session
+
+
+session = DBConnection()
 
 
 def get_client_record():
@@ -26,7 +45,7 @@ def return_zone_in_string():
     """
     :return: zone file as list witch the current client info is included
     """
-    records = session.query(Zone).all()
+    records = session().query(Zone).all()
     records.append(get_client_record())
     records = [f'{item.name} {item.ip} {item.port}' for item in records]
     return records
@@ -40,8 +59,8 @@ def append_list_to_database(new_records):
     for record in new_records:
         name, ip, port = record.split()
         new_nodes.append(Zone(name=name, ip=ip, port=port))
-    session.add_all(new_nodes)
-    session.commit()
+    session().add_all(new_nodes)
+    session().commit()
 
 
 def update_zone(received_zone):
@@ -54,7 +73,7 @@ def update_zone(received_zone):
     new_records = list()
     for record in received_zone.split('\n'):
         name, ip, port = record.split()
-        if not session.query(Zone).filter_by(name=name).first():
+        if not session().query(Zone).filter_by(name=name).first():
             new_records.append(record)
     if new_records:
         append_list_to_database(new_records)
