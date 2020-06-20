@@ -1,9 +1,8 @@
-import socket
 from time import sleep
 from unittest import TestCase
 
 from discover.handler import DiscoverConnection
-from discover.zone_manager import return_zone, zone_path
+from db.zone_manager import return_zone, zone_path
 
 
 class ConnectionTest(TestCase):

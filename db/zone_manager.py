@@ -1,9 +1,18 @@
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from conf.conf_reader import config
+from db.models import Zone
 
 zone_path = os.path.dirname(__file__) + '/zone.txt'
 
+db_path = os.path.dirname(__file__) + '/database.sqlite'
+
+engine = create_engine(f'sqlite:///{db_path}', echo=False)
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
 def get_client_record():
     name = config.get('General', 'name')
@@ -16,10 +25,9 @@ def return_zone():
     """
     :return: zone file as list witch the current client info is included
     """
-    with open(zone_path, 'r') as file:
-        zone_file = file.read().splitlines()
-    zone_file.append(get_client_record())
-    return zone_file
+    records = session.query(Zone).all()
+    records.append(get_client_record())
+    return records
 
 
 def append_list_to_file(path, new_lines):

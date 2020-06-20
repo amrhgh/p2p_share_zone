@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from discover.zone_manager import return_zone, zone_path, update_zone, get_nodes_name, zone_list_to_dict
+from db.models import Zone
+from db.zone_manager import return_zone, zone_path, update_zone, get_nodes_name, zone_list_to_dict, session
 from conf.conf_reader import config
 
 
@@ -14,9 +15,7 @@ class ZoneTest(TestCase):
 
     def test_append_new_record_as_list_file_is_empty(self):
         new_records = ['S2 172.28.1.2 8888', 'S3 172.28.1.3 8888']
-        new_records = bytes('\n'.join(new_records), encoding='UTF-8')
-        file = open(zone_path, 'w')
-        file.close()
+        session.query().delete()
         update_zone(new_records)
         file = open(zone_path)
         lines = file.readlines()
