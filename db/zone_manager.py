@@ -1,6 +1,6 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from conf.conf_reader import config
 from db.models import Zone
@@ -10,8 +10,8 @@ zone_path = os.path.dirname(__file__) + '/zone.txt'
 db_path = os.path.dirname(__file__) + '/database.sqlite'
 
 engine = create_engine(f'sqlite:///{db_path}', echo=False)
-Session = sessionmaker()
-Session.configure(bind=engine)
+session_factory = sessionmaker(bind=engine)
+Session = scoped_session(session_factory)
 session = Session()
 
 
