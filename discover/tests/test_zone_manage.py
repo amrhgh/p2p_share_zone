@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from discover.zone_manager import return_zone, zone_path, update_zone, get_nodes_name
+from discover.zone_manager import return_zone, zone_path, update_zone, get_nodes_name, zone_list_to_dict
 from conf.conf_reader import config
 
 
@@ -55,3 +55,27 @@ class ZoneTest(TestCase):
         ]
         names = get_nodes_name(zone_list)
         self.assertEqual(['NS3', 'NS4', 'NS1'], names)
+
+
+    def test_zone_list_to_dict(self):
+        zone_list = [
+            'NS3 172.28.1.3 8888',
+            'NS4 172.28.1.4 8888',
+            'NS1 172.28.1.1 8888'
+        ]
+        zone_dic = {
+            'NS3': {
+                'ip': '172.28.1.3',
+                'port': '8888'
+            },
+            'NS4': {
+                'ip': '172.28.1.4',
+                'port': '8888'
+            },
+            'NS1': {
+                'ip': '172.28.1.1',
+                'port': '8888'
+            }
+        }
+        result = zone_list_to_dict(zone_list)
+        self.assertEqual(result, zone_dic)

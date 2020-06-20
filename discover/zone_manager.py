@@ -37,10 +37,13 @@ def update_zone(received_zone):
     add new records to zone
     :param received_zone: get current zone records appended current client info
     """
+    if received_zone == b'':  # in the event that nothing to update
+        return
     received_zone = received_zone.decode()
     zone_list = return_zone()
     new_records = list()
     for record in received_zone.split('\n'):
+        name, ip, port = record.split()
         if record not in zone_list:
             new_records.append(record)
     if new_records:
@@ -48,8 +51,19 @@ def update_zone(received_zone):
 
 
 def get_nodes_name(zone_list):
+    """
+    get names of all nodes exist in zone list
+    """
     names = list()
     for node in zone_list:
         name, address = node.split(' ', 1)
         names.append(name)
     return names
+
+
+def zone_list_to_dict(zone_list):
+    zone_dic = dict()
+    for record in zone_list:
+        name, ip, port = record.split()
+        zone_dic.update({name: {'ip': ip, 'port': port}})
+    return zone_dic
