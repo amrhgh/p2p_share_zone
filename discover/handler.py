@@ -39,12 +39,13 @@ class SendZoneThread(threading.Thread):
         self.is_thread_stop = False
 
     def run(self):
+        interval = config.getint('Discover', 'send_zone_interval')
         while not self.is_thread_stop:
             clients_list = return_zone_in_string()  # get list of all clients
             for client in clients_list[:-1]:  # last record in zone is the current client
                 name, ip, port, distance = client.split()
                 self.connection.send_zone(clients_list, ip, port)
-            sleep(2)
+            sleep(interval)
 
 
 class DiscoverConnection:
