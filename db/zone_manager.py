@@ -51,7 +51,7 @@ def return_zone_in_string():
     return records
 
 
-def append_list_to_database(new_records, update_records, sender_address):
+def append_new_record_to_database(new_records, sender_address):
     """
     append new records to database
     """
@@ -65,11 +65,18 @@ def append_list_to_database(new_records, update_records, sender_address):
                  client_port=record[2],
                  distance=int(record[3]) + 1))
     session().add_all(new_nodes)
+    session().commit()
+
+
+def append_update_record_to_database(update_records, sender_address):
+    """
+    append new records to database
+    """
     for record in update_records:
         obj = session().query(Zone).get(record[0])
         obj.interface_ip = sender_address[0]
         obj.interface_port = sender_address[1]
-        obj.distance = record[1]
+        obj.distance = int(record[1]) + 1
     session().commit()
 
 
@@ -92,4 +99,6 @@ def update_zone(received_zone, sender_address):
         else:
             new_records.append([name, client_ip, client_port, distance])
     if new_records:
-        append_list_to_database(new_records, update_records, sender_address)
+        append_new_record_to_database(new_records, sender_address)
+    if update_records:
+        append_update_record_to_database(update_records, sender_address)
