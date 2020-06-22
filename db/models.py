@@ -8,12 +8,14 @@ class Zone(Base):
     __tablename__ = 'zone'
 
     name = Column(String, primary_key=True)
-    ip = Column(String)
-    port = Column(Integer)
+    client_ip = Column(String)
+    client_port = Column(Integer)
+    interface_ip = Column(String)
+    interface_port = Column(Integer)
     distance = Column(Integer, default=1)
 
     def __repr__(self):
-        return f"{self.name} --- {self.ip} --- {self.port}"
+        return f"{self.name} --- {self.client_ip} --- {self.client_port}"
 
 
 from sqlalchemy import create_engine

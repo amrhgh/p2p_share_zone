@@ -22,7 +22,7 @@ class ConnectionTest(TestCase):
             first_connection = DiscoverConnection(*self.first_connection_conf, start_send_zone_thread=False)
             second_connection = DiscoverConnection(*self.second_connection_conf, start_send_zone_thread=False
                                                    , start_receiving_server=False)
-            second_connection.send_zone(['NS10 1.0.0.1 8888', ], *self.first_connection_conf)
+            second_connection.send_zone(['NS10 1.0.0.1 8888 1', ], *self.first_connection_conf)
             sleep(0.5)
         finally:
             first_connection.close()

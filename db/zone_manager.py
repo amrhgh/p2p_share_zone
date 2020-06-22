@@ -38,7 +38,7 @@ def get_client_record():
     name = config.get('General', 'name')
     ip = config.get('General', 'ip')
     port = config.get('Discover', 'port')
-    return Zone(name=name, ip=ip, port=port)
+    return Zone(name=name, ip=ip, port=port, distance=0)
 
 
 def return_zone_in_string():
@@ -47,23 +47,28 @@ def return_zone_in_string():
     """
     records = session().query(Zone).all()
     records.append(get_client_record())
-    records = [f'{item.name} {item.ip} {item.port}' for item in records]
+    records = [f'{item.name} {item.client_ip} {item.client_port} {item.distance}' for item in records]
     return records
 
 
-def append_list_to_database(new_records):
+def append_list_to_database(new_records, update_records, sender_address):
     """
     append new records to database
     """
     new_nodes = list()
     for record in new_records:
-        name, ip, port = record.split()
-        new_nodes.append(Zone(name=name, ip=ip, port=port))
+        new_nodes.append(
+            Zone(name=record[0], ip=sender_address[0], port=sender_address[1], distance=int(record[1]) + 1))
     session().add_all(new_nodes)
+    for record in update_records:
+        obj = session().query(Zone).get(record[0])
+        obj.client_ip = sender_address[0]
+        obj.client_port = sender_address[1]
+        obj.distance = record[1]
     session().commit()
 
 
-def update_zone(received_zone):
+def update_zone(received_zone, sender_address):
     """
     add new records to zone
     """
@@ -71,9 +76,16 @@ def update_zone(received_zone):
         return
     received_zone = received_zone.decode()
     new_records = list()
+    update_records = list()
     for record in received_zone.split('\n'):
-        name, ip, port = record.split()
-        if not session().query(Zone).filter_by(name=name).first() and name != config.get('General', 'name'):
-            new_records.append(record)
+        name, ip, port, distance = record.split()
+        if name == config.get('General', 'name'):
+            continue
+        if exist_record := session().query(Zone).filter_by(name=name).first():
+            if exist_record.distance > int(distance) + 1:
+                update_records.append([name, distance])
+        else:
+            new_records.append([name, distance])
+
     if new_records:
-        append_list_to_database(new_records)
+        append_list_to_database(new_records, update_records, sender_address)

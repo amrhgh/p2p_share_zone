@@ -25,7 +25,7 @@ class ServerThread(threading.Thread):
             try:
                 data, addr = self.sock.recvfrom(1024)
                 if data:
-                    update_zone(data)
+                    update_zone(data, addr)
             except socket.timeout:  # TODO: find better solution to recvfrom block function
                 # server run until is_server_stop is False
                 if self.is_server_stop:
@@ -42,7 +42,7 @@ class SendZoneThread(threading.Thread):
         while not self.is_thread_stop:
             clients_list = return_zone_in_string()  # get list of all clients
             for client in clients_list[:-1]:  # last record in zone is the current client
-                name, ip, port = client.split()
+                name, ip, port, distance = client.split()
                 self.connection.send_zone(clients_list, ip, port)
             sleep(2)
 
