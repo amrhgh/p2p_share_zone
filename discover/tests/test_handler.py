@@ -36,7 +36,7 @@ class ConnectionTest(TestCase):
         try:
             first_connection = DiscoverConnection(*self.first_connection_conf)
             second_connection = DiscoverConnection(*self.second_connection_conf)
-            sleep(4)
+            sleep(2)
         finally:
             first_connection.close()
             second_connection.close()

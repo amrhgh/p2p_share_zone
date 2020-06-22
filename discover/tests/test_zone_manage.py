@@ -8,7 +8,7 @@ class ZoneTest(TestCase):
     def test_records_return_correctly(self):
         session().query(Zone).delete()
         session().commit()
-        obj = Zone(name='NS3', ip='1.28.1.3', port=8888)
+        obj = Zone(name='NS3', client_ip='1.28.1.3', client_port=8888)
         session().add(obj)
         session().commit()
         records = return_zone_in_string()

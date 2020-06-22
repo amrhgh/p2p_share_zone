@@ -38,7 +38,7 @@ def get_client_record():
     name = config.get('General', 'name')
     ip = config.get('General', 'ip')
     port = config.get('Discover', 'port')
-    return Zone(name=name, ip=ip, port=port, distance=0)
+    return Zone(name=name, client_ip=ip, client_port=port, distance=0)
 
 
 def return_zone_in_string():
@@ -58,12 +58,17 @@ def append_list_to_database(new_records, update_records, sender_address):
     new_nodes = list()
     for record in new_records:
         new_nodes.append(
-            Zone(name=record[0], ip=sender_address[0], port=sender_address[1], distance=int(record[1]) + 1))
+            Zone(name=record[0],
+                 interface_ip=sender_address[0],
+                 interface_port=sender_address[1],
+                 client_ip=record[1],
+                 client_port=record[2],
+                 distance=int(record[3]) + 1))
     session().add_all(new_nodes)
     for record in update_records:
         obj = session().query(Zone).get(record[0])
-        obj.client_ip = sender_address[0]
-        obj.client_port = sender_address[1]
+        obj.interface_ip = sender_address[0]
+        obj.interface_port = sender_address[1]
         obj.distance = record[1]
     session().commit()
 
@@ -78,14 +83,13 @@ def update_zone(received_zone, sender_address):
     new_records = list()
     update_records = list()
     for record in received_zone.split('\n'):
-        name, ip, port, distance = record.split()
+        name, client_ip, client_port, distance = record.split()
         if name == config.get('General', 'name'):
             continue
         if exist_record := session().query(Zone).filter_by(name=name).first():
             if exist_record.distance > int(distance) + 1:
                 update_records.append([name, distance])
         else:
-            new_records.append([name, distance])
-
+            new_records.append([name, client_ip, client_port, distance])
     if new_records:
         append_list_to_database(new_records, update_records, sender_address)
